@@ -1,0 +1,29 @@
+5 model
+
+MODEL_NAMES = [f"base{i+1}.pth" for i in range(5)]
+PARAMETERS = [(64,32), (87,78), (77,33), (123,21), (212, 16)]
+
+==============================
+[-] Performing testing...
+Files already downloaded and verified
+[*] Accuracy: 0.551875
+==============================
+[-] Performing testing...
+Files already downloaded and verified
+[*] Accuracy: 0.5465
+==============================
+[-] Performing testing...
+Files already downloaded and verified
+[*] Accuracy: 0.52775
+==============================
+[-] Performing testing...
+Files already downloaded and verified
+[*] Accuracy: 0.54325
+==============================
+[-] Performing testing...
+Files already downloaded and verified
+[*] Accuracy: 0.567125
+==============================
+
+Mean Ensemble: 0.605375
+
