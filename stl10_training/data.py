@@ -6,7 +6,7 @@ from IPython import embed
 
 import numpy as np
 
-def get_train_val_split(batch_size, num_workers=1, val_split=0.2):
+def get_train_val_split(batch_size, model_num, num_workers=1, val_split=0.2):
     ''' Returns training and validation data loaders.
     batch_size (int): Batch size.
     num_workers (int): How many threads to use to load data. For deterministic behavior, set seed or set to 1.
@@ -20,24 +20,30 @@ def get_train_val_split(batch_size, num_workers=1, val_split=0.2):
 
     dataset = datasets.stl10.STL10(root="data", split="train", transform=data_transform, download=True)
 
+
     # Train / Val Split
-    num_train = len(dataset)
+    num_train = len(dataset) # 4000
     indices = list(range(num_train))
-    split = int(np.floor(val_split * num_train))
-    split2 = int(np.floor(val_split * 0.5 * num_train))
     np.random.shuffle(indices)
 
-    # Use first portion as train, second as val
-    train_idx, val_idx, val_idx2 = indices[split:], indices[split2:split], indices[:split2]
+    train_idx, ensemble_idx = indices[:4000], indices[4000:]
+    ensemble_train_idx, ensemble_test_idx = ensemble_idx[:800], ensemble_idx[800:]
+    train_idx = [train_idx[i*800:(i+1)*800] for i in range(5)]
+    val_idx = train_idx[model_num]
+    del train_idx[model_num]
+    train_idx = np.array(train_idx).reshape(-1).tolist()
+
     train_sampler = SubsetRandomSampler(train_idx)
     val_sampler = SubsetRandomSampler(val_idx)
-    val_sampler2 = SubsetRandomSampler(val_idx2)
+    ensemble_train_sampler = SubsetRandomSampler(ensemble_train_idx)
+    ensemble_val_sampler = SubsetRandomSampler(ensemble_test_idx)
 
     train_loader = DataLoader(dataset, batch_size=batch_size, num_workers=num_workers, sampler=train_sampler)
     val_loader = DataLoader(dataset, batch_size=batch_size, num_workers=num_workers, sampler=val_sampler)
-    val_loader2 = DataLoader(dataset, batch_size=batch_size, num_workers=num_workers, sampler=val_sampler2)
+    ensemble_train_loader = DataLoader(dataset, batch_size=batch_size, num_workers=num_workers, sampler=ensemble_train_sampler)
+    ensemble_val_loader = DataLoader(dataset, batch_size=batch_size, num_workers=num_workers, sampler=ensemble_val_sampler)
 
-    return train_loader, val_loader, val_loader2
+    return train_loader, val_loader, ensemble_train_loader, ensemble_val_loader
 
 def get_test(batch_size, num_workers=1):
     ''' Returns testing data loaders.

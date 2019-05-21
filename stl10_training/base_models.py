@@ -4,7 +4,6 @@ import torch.nn.functional as F
 
 import numpy as np
 from IPython import embed
-import densenet
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 

@@ -119,9 +119,7 @@ def go_test():
         test(model, test_loader)
 
 def main():
-    ##################
-    # Initialization #
-    ##################
+    # Initialization
 
     model = base_models.base_classifier(parameter=PARAMETER)
     model.to(device)
@@ -130,16 +128,13 @@ def main():
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=base_lr)
 
-    ############
     # Training #
-    ############
-    train_loader, val_loader, val_loader2 = get_train_val_split(batch_size)
+    train_loader, val_loader, ensemble_train_loader, ensemble_val_loader = get_train_val_split(batch_size, model_num=int(sys.argv[1]))
 
     # Use model that performs best on validation for testing
     best_val_accuracy = 0
 
     for epoch in range(num_epochs):
-        # Train
         print("="*30)
         train(model, train_loader, optimizer, criterion, epoch)
 
